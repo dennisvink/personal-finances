@@ -56,7 +56,7 @@ This yml template generates the following graph:
     month: 5                      # Month of the year this event happens
     except: "2017"                # But not in 2017 :(
 - new_car:
-    amount: 15000
+    amount: 25000
     modifier: minus
     period: once
     month: 5
