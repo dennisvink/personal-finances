@@ -1,0 +1,37 @@
+- balance: 0                      # Initial balance
+- salary:                         # Category, isn't used. It's so you know what's what.
+    amount: 2500                  # Amount
+    period: monthly               # Period can be monthly, once or yearly
+    modifier: plus                # Modifier can be plus or minus
+    growth: 3                     # Annual (positive or negative) growth of amount (percent)
+- fun:
+    amount: 500
+    period: monthly
+    modifier: minus
+    except: "May 2017,June,2018"  # Except for May 2017, June (any year) and the whole of 2018
+- rent:
+    amount: 750
+    period: monthly
+    modifier: minus
+- insurance:
+    amount: 200
+    period: monthly
+    modifier: minus
+    growth: 10
+- food:
+    amount: 300
+    period: monthly
+    modifier: minus
+    growth: 3
+- bonus:
+    amount: 3000
+    modifier: plus
+    period: yearly
+    month: 5                      # Month of the year this event happens
+    except: "2017"                # But not in 2017 :(
+- new_car:
+    amount: 25000
+    modifier: minus
+    period: once
+    month: 5
+    year: 2019                    # Spend a shitload of money in May 2019

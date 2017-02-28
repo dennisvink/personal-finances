@@ -1,0 +1,16 @@
+<HTML>
+  <HEAD>
+    <%= erb :bootstrapcss %>
+  </HEAD>
+  <BODY>
+    <div class="container">
+      <%= erb :navbar %>
+      <div class="jumbotron">
+        <h1>Personal Finances</h1>
+        <p>(c) 2017 Dennis Vink, all rights reserved</p>
+        <%= @message %>
+      </div>
+    </div>
+    <%= erb :scripts %>
+  </body>
+</html>
