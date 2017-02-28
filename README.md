@@ -9,6 +9,8 @@ bundle install
 rake
 ```
 
+The first time you rake it'll ask you for a password.
+After the password is set you can just start this application with `rake`.
 By default the dashboard is available at  <http://localhost:12345>
 
 ## Creating a profile
