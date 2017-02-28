@@ -7,7 +7,7 @@ Ruby project - sinatra/puma backed server to visualize your personal finances.
 ```
 bundle install
 rake
-``
+```
 
 By default the dashboard is available at  <http://localhost:12345>
 
