@@ -60,7 +60,7 @@ This yml template generates the following graph:
     modifier: minus
     period: once
     month: 5
-    year: 2019                    # Spend a shitload of money in May 2019!
+    year: 2019                    # Spend a shitload of money in May 2019.
 ```
 
 ### Access management
