@@ -1,38 +1,38 @@
-require 'erb'
-require 'json'
-require 'yaml'
-require 'date'
-require 'digest'
+require "erb"
+require "json"
+require "yaml"
+require "date"
+require "digest"
 
 class Finances < Sinatra::Base
   set :server, :puma
-  set :port, ENV['PORT']
+  set :port, ENV["PORT"]
   set :root, File.expand_path("..", File.dirname(__FILE__))
-  set :bind, '0.0.0.0'
+  set :bind, "0.0.0.0"
 
   register Sinatra::Reloader
 
   use Rack::Auth::Basic, "Restricted Area" do |username, password|
     hash = Digest::SHA256.hexdigest password
-    username == 'admin' && hash == ENV['PASSWORD']
+    username == "admin" && hash == ENV["PASSWORD"]
   end
 
-  def get_navbar_links
-    content = ''
+  def navbar_links
+    content = ""
     Dir["data/*.yml"].each do |file|
       file.slice! "data/"
       file.slice! ".yml"
-      content = content + "<li><a href='#{file}'>#{file.capitalize}</a></li>" 
+      content += "<li><a href='#{file}'>#{file.capitalize}</a></li>"
     end
     content
   end
 
-  get '/' do
-    @content_navbar = get_navbar_links
+  get "/" do
+    @content_navbar = navbar_links
     erb :index
   end
 
-  ['/:name', '/:name/:years'].each do |path|
+  ["/:name", "/:name/:years"].each do |path|
     get path do
       money = 0
       income = 0
@@ -45,24 +45,24 @@ class Finances < Sinatra::Base
       this_month = Date.today.strftime("%m")
       this_year = Date.today.strftime("%Y")
       month = this_month.sub!(/^0/, "").to_i
-      until_year = this_year.to_i + display_years 
+      until_year = this_year.to_i + display_years
       cur_year = this_year.to_i
-      months = %w( Januari Februari March April May June Juli August September October November December )
+      months = %w[Januari Februari March April May June Juli August September October November December]
       if File.file?("data/#{params[:name]}.yml")
         config = YAML.load_file("data/#{params[:name]}.yml")
-        content = "['Month','Money','Expenses','Income']," 
-        while(cur_year < until_year)
+        content = "['Month','Money','Expenses','Income'],"
+        while cur_year < until_year
           while month < 12
             config.each do |row|
-              amount=0
-              modifier=''
-              row.each do |type,data|
-                if type == 'balance'
+              amount = 0
+              modifier = ""
+              row.each do |type, data|
+                if type == "balance"
                   money = data
                   set_balance = true
                 end unless set_balance
-                if type == 'month'
-                  month = data-1
+                if type == "month"
+                  month = data - 1
                   set_month = true
                 end unless set_month
                 if type == 'year'
@@ -74,56 +74,56 @@ class Finances < Sinatra::Base
                 growth = 0
                 except = 0
                 stack = true
-                modifier = ''
+                modifier = ""
                 debit_month = 0
-                debit_year = cur_year 
-                data.each do |k,v|
-                  amount = v if k == 'amount'
-                  period = v if k == 'period'
-                  modifier = v if k == 'modifier'
-                  debit_month = v if k == 'month'
-                  debit_year = v if k == 'year'
-                  growth = v if k == 'growth'
-                  except = v if k == 'except'
-                  stack = v if k == 'stack'
-                end unless %w( balance month year ).include? type
+                debit_year = cur_year
+                data.each do |k, v|
+                  amount = v if k == "amount"
+                  period = v if k == "period"
+                  modifier = v if k == "modifier"
+                  debit_month = v if k == "month"
+                  debit_year = v if k == "year"
+                  growth = v if k == "growth"
+                  except = v if k == "except"
+                  stack = v if k == "stack"
+                end unless %w[balance month year].include? type
 
                 if growth > 0
                   offset = cur_year.to_i - this_year.to_i
                   if offset > 0
                     increase = 1 + (growth.to_f / 100)
                     (1..offset).each do
-                      amount = amount * increase
+                      amount *= increase
                     end
                     amount = amount.round
                   end
                 end
 
-                if (period == 'monthly') ||
-                   (period == 'yearly' && month == debit_month - 1) ||
-                   (period == 'once' && month == debit_month - 1 && cur_year == debit_year)
-                  money = money - amount if modifier == 'minus'
-                  money = money + amount if modifier == 'plus'
-                  waste = waste + amount if modifier == 'minus' unless stack == false
-                  income = income + amount if modifier == 'plus' unless stack == false
+                if (period == "monthly") ||
+                   (period == "yearly" && month == debit_month - 1) ||
+                   (period == "once" && month == debit_month - 1 && cur_year == debit_year)
+                  money -= amount if modifier == "minus"
+                  money += amount if modifier == "plus"
+                  waste += amount if modifier == "minus" unless stack == false
+                  income += amount if modifier == "plus" unless stack == false
                 end unless (except.to_s.split(",").include? months[month]) ||
                            (except.to_s.split(",").include? "#{cur_year.to_s}") ||
                            (except.to_s.split(",").include? "#{months[month]} #{cur_year.to_s}")
               end
             end
-            content = content + "['#{months[month]} #{cur_year}', #{money}, #{waste}, #{income}],"
-            month = month + 1
+            content += "['#{months[month]} #{cur_year}', #{money}, #{waste}, #{income}],"
+            month += 1
           end
-          cur_year = cur_year + 1
+          cur_year += 1
           month = 0
         end
         content = content.chomp(",")
-        @content_navbar = get_navbar_links
+        @content_navbar = navbar_links
         @content = content
         erb :data
       else
         status 404
-        @message ="Unable to locate this profile."
+        @message = "Unable to locate this profile."
         erb :index
       end
     end
